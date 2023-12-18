@@ -1,7 +1,8 @@
 // Write your code here
 import {Component} from 'react'
 import Cookies from 'js-cookie'
-import {Redirect} from 'react-router-dom'
+import Loader from 'react-loader-spinner'
+import {BsPlusSquare, BsDashSquare} from 'react-icons/bs'
 
 import Header from '../Header'
 import ProductCard from '../ProductCard'
@@ -13,6 +14,7 @@ const prodConstants = {
   failure: 'FAILURE',
   inProgress: 'IN_PROGRESS',
 }
+
 class ProductItemDetails extends Component {
   state = {
     apiStatus: prodConstants.initial,
@@ -64,7 +66,7 @@ class ProductItemDetails extends Component {
         similarProducts: similarUpdatedData,
         apiStatus: prodConstants.success,
       })
-    } else if (response.status === 401) {
+    } else {
       this.setState({
         apiStatus: prodConstants.failure,
       })
@@ -72,7 +74,8 @@ class ProductItemDetails extends Component {
   }
 
   redirectToShop = () => {
-    return <Redirect to="/products" />
+    const {history} = this.props
+    history.push('/products')
   }
 
   onIncrement = () => {
@@ -100,7 +103,7 @@ class ProductItemDetails extends Component {
       <div className="the-container">
         <Header />
         <div className="upper-container">
-          <img className="picture" src={imageUrl} alt={title} />
+          <img className="picture" src={imageUrl} alt="product" />
           <div className="text-container">
             <h1 className="heading">{title}</h1>
             <p className="price">Rs {price}/-</p>
@@ -126,15 +129,24 @@ class ProductItemDetails extends Component {
             <hr />
 
             <div className="btn-container">
-              <button onClick={this.onIncrement} className="btn">
-                -
+              <button
+                onClick={this.onIncrement}
+                data-testid="minus"
+                className="btn"
+              >
+                <BsDashSquare className="iconny" />
               </button>
               <p className="quantity">{quantity}</p>
-              <button className="btn">-</button>
+              <button
+                onClick={this.onDecrement}
+                data-testid="plus"
+                className="btn"
+              >
+                <BsPlusSquare className="iconny" />
+              </button>
             </div>
-            <button onClick={this.this.onDecrement} className="cart-btn">
-              ADD TO CART
-            </button>
+
+            <button className="cart-btn">ADD TO CART</button>
           </div>
         </div>
 
@@ -149,6 +161,12 @@ class ProductItemDetails extends Component {
       </div>
     )
   }
+
+  renderLoadingView = () => (
+    <div data-testid="loader" className="load-container">
+      <Loader type="ThreeDots" color="#0b69ff" height={80} width={80} />
+    </div>
+  )
 
   renderFailureView = () => (
     <div className="fail-container">
